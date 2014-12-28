@@ -1,0 +1,14 @@
+<div class="box">
+	<div class="box-header">
+		<h3 class="box-title"><i class="fa fa-sitemap"></i> ประวัติการเข้าสู่ระบบผ่าน Launcher ของผู้เล่น</h3>
+	</div>
+	<div class="box-body">
+		<table class="table">
+			<tr>
+				<th>#</th>
+				<th>ประวัติ</th>
+			</tr>
+			{LOGIN_LOG_CONTENT}
+		</table>
+	</div>
+</div>

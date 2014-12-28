@@ -1,0 +1,45 @@
+<form action="" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="ac" value="config">
+	<div class="box">
+		<div class="box-header">
+			<h3 class="box-title"><i class="glyphicon glyphicon-cog"></i> การตั้งค่าอ้างอิงฐานข้อมูลของผู้เล่น</h3>
+		</div>
+		<div class="box-body">
+			<table class="table">
+				<tr>
+					<td>Mysql Host</td>
+					<td><input type="text" name="mysql_login_host" class="form-control" value="{MYSQL_HOST}"></td>
+				</tr>
+				<tr>
+					<td>Mysql Username</td>
+					<td><input type="text" name="mysql_login_user" class="form-control" value="{MYSQL_USER}"></td>
+				</tr>
+				<tr>
+					<td>Mysql Password</td>
+					<td><input type="text" name="mysql_login_pass" class="form-control" value="{MYSQL_PASS}"></td>
+				</tr>
+				<tr>
+					<td>Mysql Database</td>
+					<td><input type="text" name="mysql_login_database" class="form-control" value="{MYSQL_DATABASE}"></td>
+				</tr>
+				<tr>
+					<td>Mysql Table User</td>
+					<td><input type="text" name="mysql_login_table_user" class="form-control" value="{MYSQL_TABLE_USER}"></td>
+				</tr>
+				<tr>
+					<td>Mysql Field Username</td>
+					<td><input type="text" name="mysql_login_table_field_user" class="form-control" value="{MYSQL_TABLE_FIELD_USER}"></td>
+				</tr>
+				<tr>
+					<td>Mysql Field Password</td>
+					<td><input type="text" name="mysql_login_table_field_pass" class="form-control" value="{MYSQL_TABLE_FIELD_PASS}"></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<button type="submit" class="btn btn-success btn-block">แก้ไขข้อมูล</button>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</form>
