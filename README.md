@@ -6,3 +6,9 @@ Autoupdate System Server Side make for client request files to update in client 
 ============
 [Thai]
 สคริปนี้เป็นระบบฝั่ง Server ของตัวโปรแกรม Autoupdate ที่ผมได้จัดทำขึ้น ตัวโปรแกรมหรือโค้ดจะไม่ได้ถูกนำมารวมไว้กับโปรเจคนี้ สคริปนี้จะไม่ขายให้ใครทั้งสิ้น
+
+ไฟล์ที่มีปัญหา ณ ปัจจุบัน
+===========
+* dashboard/template/update/add.php
+* dashboard/upload_process.php
+นอกนั้นจะมีในเรื่องของความเร็วในการประมวณผลและความปลอดภัย
