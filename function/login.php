@@ -45,6 +45,9 @@ class Logins{
 		global $rdir,$mysql,$cookie;
 		if($i == 5){
 			$url = "dashboard.php" ;
+			if(parse_url($_POST['self'])==$_SERVER['HTTP_HOST']){
+				$url = $_POST['self'];
+			}
 			unset($_POST['signIn']);
 			unset($_POST['action']);
 			unset($_POST['Passwds']);

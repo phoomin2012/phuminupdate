@@ -1,170 +1,276 @@
 ﻿<script>
-/* Script written by Adam Khoury @ DevelopPHP.com */
-/* Video Tutorial: http://www.youtube.com/watch?v=EraNFJiY0Eg */
-function _(el){
-	return document.getElementById(el);
-}
-function uploadFile(){
-	$('#button_upload').button('loading');
-	
-	var email =  $("#inputbox1").val();
-	var name =  $("#inputbox2").val();
-	var group =  $("#inputbox3").val();
-	var password = $("#inputbox4").val();
-	
-	//alert(file.name+" | "+file.size+" | "+file.type);
-	var formdata = new FormData();
-	formdata.append("email", email);
-	formdata.append("name", name);
-	formdata.append("group", group);
-	formdata.append("password", password);
-	var ajax = new XMLHttpRequest();
-	ajax.upload.addEventListener("progress", progressHandler, false);
-	ajax.addEventListener("load", completeHandler, false);
-	ajax.addEventListener("error", errorHandler, false);
-	ajax.addEventListener("abort", abortHandler, false);
-	ajax.open("POST", "dashboard/add_user_process.php");
-	ajax.send(formdata);
-}
-
-function formatSizeUnits(bytes){if(bytes>=1073741824){bytes=(bytes/1073741824).toFixed(2)+' GB';}else if (bytes>=1048576){bytes=(bytes/1048576).toFixed(2)+' MB';}else if (bytes>=1024){bytes=(bytes/1024).toFixed(2)+' KB';}else if (bytes>1){bytes=bytes+' ไบต์';}else if (bytes==1){bytes=bytes+' ไบต์';}else{bytes='0 ไบต์';}return bytes;}
-function FormatSecondsAsDurationString( seconds ){var s = "";var days = Math.floor( ( seconds / 3600 ) / 24 );if ( days >= 1 ){s += days.toString() + " วัน" + ( ( days == 1 ) ? "" : "s" ) + " ";seconds -= days * 24 * 3600;}var hours = Math.floor( seconds / 3600 );s += GetPaddedIntString( hours.toString(), 2 ) + ":";seconds -= hours * 3600;var minutes = Math.floor( seconds / 60 );s += GetPaddedIntString( minutes.toString(), 2 ) + ":";seconds -= minutes * 60;s += GetPaddedIntString( Math.floor( seconds ).toString(), 2 );return s;}
-function GetPaddedIntString( n, numDigits ){var nPadded = n;for ( ; nPadded.length < numDigits ; ){nPadded = "0" + nPadded;}return nPadded;}
-
-var old_size_up_c = 0;
-var new_size_up_c = 0;
-var full_size_up  = 0;
-function progressHandler(event){
-	new_size_up_c = event.loaded;
-	full_size_up = event.total;
-	var speed_up = ((new_size_up_c - old_size_up_c)).toFixed(2);
-	
-	var percent = (event.loaded / event.total) * 100;
-	$("#process-upload").css("width",(Math.round(percent)+0)+"%");
-	var time_out = ((full_size_up - new_size_up_c)/(speed_up)).toFixed(0);
-	_("loaded_n_total").innerHTML = "อัพโหลดแล้ว "+formatSizeUnits(event.loaded)+" / "+formatSizeUnits(event.total)+"<br>"+"ความเร็วอัพโหลด "+formatSizeUnits(speed_up)+" / วินาที"+"<br>"+"เสร็จสิ้นใน "+FormatSecondsAsDurationString(time_out)+" ชั่วโมง";
-	_("status").innerHTML = Math.round(percent)+"% กำลังอัพโหลด...";
-	old_size_up_c = event.loaded;
-}
-function completeHandler(event){
-	if(event.target.responseText=="cant_add_user"){
-		_("status").innerHTML = "move_uploaded_file() function failed";
-		$("#process-upload").css("width","100%");
-		$('#button_upload').button('reset');
-		setstep(2);
-	}else if(event.target.responseText=="success"){
-		setstep(4);
-	}else{
-		$('#button_upload').button('reset');
-		setstep(1);
-	}
-}
-function errorHandler(event){_("status").innerHTML = "อัพโหลดไม่สำเร็จ";}
-function abortHandler(event){_("status").innerHTML = "อัพโหลดผิดพลาด";}
-</script>
-
-<div class="box">
-	<div class="box-header">
-		<h3 class="box-title"><i class="glyphicon glyphicon-plus"></i> เพื่มบัญชี</h3>
-        <div class="box-tools pull-right">                    
-			<button type="button" class="btn btn-success btn-sm" onclick="javascript:window.location='?page=user';"><i class="glyphicon glyphicon-arrow-left"></i> กลับ</button>
-		</div>
-	</div><!-- /.box-header -->
-	<div class="box-body table-responsive" id='box-step-1-2'>
-		<table class="table">
-			<tr>
-				<td width="20%" valign="middle"><label for="inputbox1">อีเมล์</label></td>
-				<td>
-                	<input type="text" class="form-control" name="email" id="inputbox1" placeholder="ตัวอย่าง : exsample@test.me">
-                </td>
-			</tr>
-			<tr>
-				<td><label for="inputbox2">ชื่อ</label></td>
-				<td><div class="input-group">
-                	<div class="input-group-addon"><i class="fa fa-user"></i></div>
-					<input type="text" id="inputbox2" class="form-control" name="name" placeholder="ตัวอย่าง : คน มนุษย์">
-				</div></td>
-			</tr>
-			<tr>
-				<td><label for="inputbox3">กลุ่มของบัญชี</label></td>
-				<td>
-					<select class="form-control input-sm" name="group" id="inputbox3">
-					<?php
-                        $q_g = $mysql->select('group','*',array(true,'query'),array(),array('name','ASC'));
-                        while($v_g = mysql_fetch_array($q_g)){
-                    ?>
-                        <option value="<?php echo $v_g['name']?>"><?php echo $v_g['name']?></option>
-                    <?php
-                        }
-                    ?>
-                    </select>
-				</td>
-			</tr>
-			<tr>
-				<td><label for="inputbox4">รหัสผ่าน</label></td>
-				<td>
-					<input type="password" name="password" class="form-control button-uplad" id="inputbox4" placeholder="รหัสผ่าน">
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-                	<div class="btn-group btn-group-justified" id='buttom-submit-step-1'>
-                        <button type="submit" onclick="setstep(2);" style="width:100%;" class="btn btn-success">ยืนยันข้อมูล</button>
-                    </div>
-                    <div class="btn-group btn-group-justified" id='buttom-submit-step-2'>
-                        <button type="submit" onclick="setstep(1);" style="width:50%;" class="btn btn-warning">แก้ไขข้อมุล</button>
-                        <button type="submit" onclick="setstep(3);" style="width:50%;" class="btn btn-success">ยืนยันข้อมูล</button>
-                	</div>
-                </td>
-			</tr>
-		</table>
-	</div><!-- /.box-body -->
-    <div class="box-body table-responsive" id='box-step-3'>
-		<div class="progress progress-striped">
-			<div class="progress-bar progress-bar-primary active" id="process-upload" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-			</div>
-		</div>
-        <h4 id="status"></h4>
-    </div>
-</div><!-- /.box -->
-
-<script>
-	var step_upload = 1;
-	function setstep(step){
-		step_upload = step;
-		if(step === 1){
-			$("#inputbox1").removeAttr('disabled');
-			$("#inputbox2").removeAttr('disabled');
-			$("#inputbox3").removeAttr('disabled');
-			$("#inputbox4").removeAttr('disabled');
-			$("#buttom-submit-step-2").hide(450,function(){
-				$("#buttom-submit-step-1").show(450);
+(function($) {
+	$.fn.serializefiles = function() {
+		var obj = $(this);
+		/* ADD FILE TO PARAM AJAX */
+		var formData = new FormData();
+		$.each($(obj).find("input[type='file']"), function(i, tag) {
+			$.each($(tag)[0].files, function(i, file) {
+				formData.append(tag.name, file);
 			});
-			$("#box-step-3").hide(1);
-		}else if(step === 2){
-			$("#inputbox1").attr('disabled','disabled');
-			$("#inputbox2").attr('disabled','disabled');
-			$("#inputbox3").attr('disabled','disabled');
-			$("#inputbox4").attr('disabled','disabled');
-			$("#buttom-submit-step-1").hide(450,function(){
-				$("#buttom-submit-step-2").show(450);
+		});
+		var params = $(obj).serializeArray();
+		$.each(params, function (i, val) {
+			formData.append(val.name, val.value);
+		});
+		return formData;
+	};
+})(jQuery);
+
+		function uploadFile() {
+			$.ajax({
+				url: 'dashboard/upload_process.php',
+				type: 'POST',
+				xhr: function() {
+                    ajax = $.ajaxSettings.xhr();
+                    if(ajax.upload) {
+						ajax.upload.addEventListener('progress', progressHandler, false);
+                    }
+                    return ajax;
+                },
+				success: function(res) {
+					if(res == "move_uploaded_file") {
+						$("#status").html("function move_uploaded_file() มีปัญหา");
+						$("#process-upload").css("width", "100%");
+						setstep(2);
+					} else if(res == "zip") {
+						$("#status").html("กรุณาอัพโหลดไฟล์ Zip");
+						$("#process-upload").css("width", "100%");
+						setstep(2);
+					} else if(res == "error_no_file_select") {
+						$("#status").html("กรุณาเลือกไฟล์ก่อน");
+						$("#process-upload").css("width", "100%");
+						setstep(2);
+					} else if(res == "success") {
+						setstep(4);
+					} else {
+						console.log(res);
+						setstep(1);
+					}
+				},
+				error: function(res) {
+					$("#status").html("อัพโหลดไม่สำเร็จ");
+				},
+				abort: function(res) {
+					$("#status").html("อัพโหลดผิดพลาด");
+				},
+				data: $('#form-insert-upload').serializefiles(),
+				cache: false,
+				contentType: false,
+				processData: false
 			});
-		}else if(step === 3){
-			$("#box-step-1-2").slideUp(1000,function(){
-				$("#inputbox1").removeAttr('disabled');
-				$("#inputbox2").removeAttr('disabled');
-				$("#inputbox3").removeAttr('disabled');
-				$("#inputbox4").removeAttr('disabled');
-				$("#inputbox5").removeAttr('disabled');
-				$("#box-step-3").slideDown(1000,function(){
-					uploadFile();
-				});
-			});
-		}else if(step === 4){
-			window.location='?page=user';
-		}else{
-			setstep(1);	
 		}
-	}
-	setstep(1);
-</script>
+
+		function formatSizeUnits(bytes){
+			if(bytes>=1073741824){
+				bytes=(bytes/1073741824).toFixed(2)+' GB';
+			}else if (bytes>=1048576){
+				bytes=(bytes/1048576).toFixed(2)+' MB';
+			}else if (bytes>=1024){
+				bytes=(bytes/1024).toFixed(2)+' KB';
+			}else if (bytes>1){
+				bytes=bytes+' B';
+			}else if (bytes==1){
+				bytes=bytes+' B';
+			}else{
+				bytes='0 B';
+			}
+			return bytes;
+		}
+		
+		function FormatSecondsAsDurationString( seconds ){
+			var s = "";
+			var days = Math.floor( ( seconds / 3600 ) / 24 );
+			if ( days >= 1 ){
+				s += days.toString() + " วัน" + ( ( days == 1 ) ? "" : "s" ) + " ";
+				seconds -= days * 24 * 3600;
+			}
+			var hours = Math.floor( seconds / 3600 );
+			s += GetPaddedIntString( hours.toString(), 2 ) + ":";
+			seconds -= hours * 3600;
+			var minutes = Math.floor( seconds / 60 );
+			s += GetPaddedIntString( minutes.toString(), 2 ) + ":";
+			seconds -= minutes * 60;
+			s += GetPaddedIntString( Math.floor( seconds ).toString(), 2 );return s;
+		}
+		function GetPaddedIntString( n, numDigits ){
+			var nPadded = n;
+			for ( ; nPadded.length < numDigits ; ){
+				nPadded = "0" + nPadded;
+			}
+			return nPadded;
+		}
+
+		var old_size_up_c = 0;
+		var new_size_up_c = 0;
+		var full_size_up  = 0;
+		var title_web = $("title").html();
+		
+		var counttime_run = 0;
+		var timeever_run = 0;
+		var uppacksize = 0;
+		var time_outs = 0;
+		var speed_ups = 0;
+		var maxs_calculatertime = 0;
+		
+		
+		function calculatertimerun(up,maxs){
+			maxs_calculatertime = maxs;
+			uppacksize = uppacksize + up;
+			if(counttime_run==0){
+				setInterval(calculatertimerunmode1,1000);
+				setInterval(calculatertimerunmode2,1000);
+				counttime_run = 1;
+			}
+			timeever_run++;
+			uppacksize = 0;
+		}
+		
+		function calculatertimerunmode2(){
+			if(timeever_run==0){
+				return null;
+			}else{
+				return ((maxs_calculatertime - uppacksize)/((new_size_up_c - old_size_up_c)).toFixed(2)).toFixed(0);
+			}
+		}
+		
+		function calculatertimerunmode1(){
+			if(timeever_run==0){
+				return null;
+			}else{
+				return uppacksize.toFixed(2);
+			}
+		}
+		
+		
+		function progressHandler(event){
+			
+			new_size_up_c = event.loaded;
+			full_size_up = event.total;
+			var speed_up = ((new_size_up_c - old_size_up_c)).toFixed(2);
+			var percent = (event.loaded / event.total) * 100;
+			
+			$("title").html("("+percent.toFixed(2)+"%)"+title_web);
+			
+			$("#process-upload").css("width",(percent)+"%");
+			var time_out = ((full_size_up - new_size_up_c)/(speed_up)).toFixed(0);
+			
+			time_outs = calculatertimerun(event.loaded,event.total);
+			speed_ups = calculatertimerun(event.loaded,event.total);
+			
+			$("#loaded_n_total").html("อัพโหลดแล้ว "+
+				formatSizeUnits(event.loaded)+" / "+
+				formatSizeUnits(event.total)+"<br>"+"ความเร็วอัพโหลด "+
+				formatSizeUnits(speed_ups)+" / วินาที"+"<br>"+"เสร็จสิ้นใน "+
+				FormatSecondsAsDurationString(time_out)+" ชั่วโมง"
+			);
+			$("#status").html(percent.toFixed(2)+"% กำลังอัพโหลด...");
+			
+			old_size_up_c = event.loaded;
+			
+		}
+		</script>
+		<form id="form-insert-upload" name="form-insert-upload" method="post" enctype="multipart/form-data">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title"><i class="glyphicon glyphicon-plus"></i> เพิ่มเวอร์ชั่น</h3>
+			        <div class="box-tools pull-right">                    
+						<button type="button" class="btn btn-success btn-sm" onclick="javascript:window.location='?page=update_list';"><i class="glyphicon glyphicon-arrow-left"></i> กลับ</button>
+					</div>
+				</div><!-- /.box-header -->
+				<div class="box-body table-responsive" id='box-step-1-2'>
+					<table class="table">
+						<tr>
+							<td width="20%" valign="middle"><label for="inputbox1">ชื่อของเวอร์ชั่น</label></td>
+							<td><input type="text" class="form-control" name="name" id="inputbox1" placeholder="ตัวอย่าง : 1.0.0.0"></td>
+						</tr>
+						<tr>
+							<td><label for="inputbox2">เวลาเปิดใช้งาน</label></td>
+							<td><div class="input-group">
+								<input type="text" id="inputbox2" class="form-control" name="date" value="<?php echo date('Y-m-d H:i:s');?>">
+								<div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
+							</div></td>
+						</tr>
+						<tr>
+							<td><label for="inputbox3">เวลาเปิดใช้งาน</label></td>
+							<td>
+								<select name="enabled" class="form-control" id="inputbox3">
+									<option value="true">ใช้งาน</option>
+									<option value="false">ไม่ใช้งาน</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="inputbox4">เลือกไฟล์</label></td>
+							<td>
+								<input type="file" name="upfile" class="" id="inputbox4" accept="application/x-zip-compressed">
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+			                	<div class="btn-group btn-group-justified" id='buttom-submit-step-1'>
+			                        <button type="button" onclick="setstep(2);" style="width:100%;" class="btn btn-success">ยืนยันข้อมูล</button>
+			                    </div>
+			                    <div class="btn-group btn-group-justified" id='buttom-submit-step-2'>
+			                        <button type="button" onclick="setstep(1);" style="width:50%;" class="btn btn-warning">แก้ไขข้อมุล</button>
+			                        <button type="button" onclick="setstep(3);" style="width:50%;" class="btn btn-success">ยืนยันข้อมูล</button>
+			                	</div>
+			                </td>
+						</tr>
+					</table>
+				</div><!-- /.box-body -->
+			    <div class="box-body table-responsive" id='box-step-3'>
+					<div class="progress progress-striped active">
+						<div class="progress-bar progress-bar-primary" id="process-upload" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+						</div>
+					</div>
+			        <h4 id="status"></h4>
+					<p id="loaded_n_total"></p>
+					<p id="loaded_n"></p>
+			    </div>
+			</div><!-- /.box -->
+		</form>
+		<script>
+			var step_upload = 1;
+			function setstep(step){
+				step_upload = step;
+				if(step === 1){
+					$("#inputbox1").removeAttr('disabled');
+					$("#inputbox2").removeAttr('disabled');
+					$("#inputbox3").removeAttr('disabled');
+					$("#inputbox4").removeAttr('disabled');
+					$("#buttom-submit-step-2").hide(450,function(){
+						$("#buttom-submit-step-1").show(450);
+					});
+					$("#box-step-3").hide(1);
+				}else if(step === 2){
+					$("#inputbox1").attr('disabled','disabled');
+					$("#inputbox2").attr('disabled','disabled');
+					$("#inputbox3").attr('disabled','disabled');
+					$("#inputbox4").attr('disabled','disabled');
+					$("#buttom-submit-step-1").hide(450,function(){
+						$("#buttom-submit-step-2").show(450);
+						/*if($('#inputbox4')[0].files[0].size > (1048576 * 80)){
+							alert("สามารถอัพโหลด Patch ได้ขนาดสูงสุดครั้งละ 80 MB เท่านั้น");
+							setstep(1);
+						}*/
+					});
+					
+				}else if(step === 3){
+					$("#box-step-1-2").slideUp(1000,function(){
+						$("#inputbox1").removeAttr('disabled');
+						$("#inputbox2").removeAttr('disabled');
+						$("#inputbox3").removeAttr('disabled');
+						$("#inputbox4").removeAttr('disabled');
+						$("#box-step-3").slideDown(1000,function(){
+							uploadFile();
+						});
+					});
+				}else if(step === 4){
+					window.location='?page=update_list';
+				}else{
+					setstep(1);	
+				}
+			}
+			setstep(1);
+		</script>

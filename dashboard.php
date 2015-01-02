@@ -4,7 +4,7 @@ include_once('temp/superhead.php');
 if($cookie->get('Login_Result')==""){
 	header('Location: admin.php');
 }
-if(!isset($_GET['page']) || $_GET['page']==''){header('location:?page=dashboard');$_GET['page']='dashboard';}
+if(!isset($_GET['page']) || $_GET['page']==''){header('Location: ?page=dashboard');$_GET['page']='dashboard';}
 
 $plugins = array();
 $plugin = array('login'=>array('stats'=>''));
@@ -33,7 +33,11 @@ if($premission['group'][1]=='0'){$disabled_menu['group'][1] = 'disabled';}
 if($premission['setting'][0]=='0'){$disabled_menu['setting'][0] = 'style="display:none;"';}
 if($premission['setting'][1]=='0'){$disabled_menu['setting'][1] = 'disabled';}
 
-if(file_exists('plugins/login/function.php')){$plugin['login']['stats'] = true;}
+if(file_exists('plugins/login/function.php')){
+	$plugin['login']['stats'] = true;
+}else{
+	
+}
 
 switch($_GET['page']){
 	case 'plugin':{
@@ -133,7 +137,11 @@ switch($_GET['page']){
 							}
 						}elseif($_GET['page']=="update_add"){
 							if($premission['update'][1]=='1'){
-								include_once("dashboard/template/content/updated/add.php");
+								if($_GET['s']=='1'){
+									include_once("dashboard/template/content/updated/add.php");
+								}else{
+									include_once("dashboard/template/content/updated/add2.php");
+								}
 							}else{
 								include_once("dashboard/template/access.php");
 							}

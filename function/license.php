@@ -15,7 +15,7 @@ class License{
 		$now = time();
 		$interval = $now - @filemtime($this->cache_file);
 		if(!file_exists(dirname(__FILE__)."\\".$this->cache_file) || ($interval > $this->cache_time)){
-			$a = file_get_contents("http://system-mc.com/license/check/server.json");
+			$a = @file_get_contents("http://system-mc.com/license/check/server.json");
 			$jqQE21 = json_decode(base64_decode($a));
 			foreach($jqQE21 as $server){
 				$url = "http://".$server."/license/check/server.json";
@@ -26,7 +26,7 @@ class License{
 				}
 			}
 		}else{
-			$jqQE21 = file_get_contents(dirname(__FILE__)."\\".$this->cache_file);
+			$jqQE21 = @file_get_contents(dirname(__FILE__)."\\".$this->cache_file);
 			$jqQE21 = json_decode(base64_decode($jqQE21));
 			foreach($jqQE21 as $server){
 				$url = "http://".$server."/license/check/server.json";
@@ -42,7 +42,7 @@ class License{
 		$this->license['lic'] = $configss->get('serialkey');
 		$url = "http://".$this->server."/license/check/product/".$configss->get('serialkey')."/".$configss->get('secretkey');
 		$url.= "/".$configss->get('registrykey').".html";
-		$content = file_get_contents($url);
+		$content = @file_get_contents($url);
 		
 		if($content != false){
 			$check = json_decode($content);
@@ -118,6 +118,7 @@ class License{
 	}
 	
 	private function ErrorLicense(){
+		if(!isset($_GET['page'])){$_GET['page']='dashboard';}
 		$old = $_GET['page'];
 		if(basename($_SERVER["SCRIPT_NAME"])=="install.php"||basename($_SERVER["SCRIPT_NAME"])=="download.php"){
 			$_GET['page'] = $old;

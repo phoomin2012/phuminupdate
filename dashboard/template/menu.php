@@ -49,6 +49,9 @@
                     </a>
                 </li>
 				<?php
+				if(!isset($plugin['login'])){$plugin['login']=array('stats'=>false);}
+				if(!isset($active_menu['plugins'])){$active_menu['plugins']=array('login'=>'');}
+				if(!isset($disabled_menu['plugin'])){$disabled_menu['plugin']=array('login'=>array(''));}
 				if($plugin['login']['stats']===true){
 				?>
 				<li class="<?php echo $active_menu['plugins']['login']; ?>" <?php echo $disabled_menu['plugin']['login'][0];?>>

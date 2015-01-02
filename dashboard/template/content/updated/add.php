@@ -1,63 +1,36 @@
 <script>
-	(function($) {
-		$.fn.serializefiles = function() {
-			var obj = $(this);
-			/* ADD FILE TO PARAM AJAX */
-			var formData = new FormData();
-			$.each($(obj).find("input[type='file']"), function(i, tag) {
-				$.each($(tag)[0].files, function(i, file) {
-					formData.append(tag.name, file);
+		(function($) {
+			$.fn.serializefiles = function() {
+				var obj = $(this);
+				/* ADD FILE TO PARAM AJAX */
+				var formData = new FormData();
+				$.each($(obj).find("input[type='file']"), function(i, tag) {
+					$.each($(tag)[0].files, function(i, file) {
+						formData.append(tag.name, file);
+					});
 				});
-			});
-			var params = $(obj).serializeArray();
-			$.each(params, function (i, val) {
-				formData.append(val.name, val.value);
-			});
-			return formData;
-		};
-	})(jQuery);
-	function uploadFile() {
-			$.ajax({
-				url: 'dashboard/upload_process.php',
-				type: 'POST',
-				xhr: function() {
-                    ajax = $.ajaxSettings.xhr();
-                    if(ajax.upload) {
-						ajax.upload.addEventListener('progress', progressHandler, false);
-                    }
-                    return ajax;
-                },
-				success: function(res) {
-					if(res == "move_uploaded_file") {
-						$("#status").html("function move_uploaded_file() มีปัญหา");
-						$("#process-upload").css("width", "100%");
-						setstep(2);
-					} else if(res == "zip") {
-						$("#status").html("กรุณาอัพโหลดไฟล์ Zip");
-						$("#process-upload").css("width", "100%");
-						setstep(2);
-					} else if(res == "error_no_file_select") {
-						$("#status").html("กรุณาเลือกไฟล์ก่อน");
-						$("#process-upload").css("width", "100%");
-						setstep(2);
-					} else if(res == "success") {
-						setstep(4);
-					} else {
-						console.log(res);
-						setstep(1);
-					}
-				},
-				error: function(res) {
-					$("#status").html("อัพโหลดไม่สำเร็จ");
-				},
-				abort: function(res) {
-					$("#status").html("อัพโหลดผิดพลาด");
-				},
-				data: $('#form-insert-upload').serializefiles(),
-				cache: false,
-				contentType: 'multipart/form-data; charset=UTF-8;', 
-				processData: false
-			});
+				var params = $(obj).serializeArray();
+				$.each(params, function (i, val) {
+					formData.append(val.name, val.value);
+				});
+				return formData;
+			};
+		})(jQuery);
+	
+		function uploadFile() {
+			$('#button_upload').button('loading');
+			var serial =  $("#inputbox1")[0].files;
+			var serect =  $("#inputbox2").val();
+			var formdata = new FormData();
+			formdata.append("upfile", serial);
+			formdata.append("id", serect);
+			var ajax = new XMLHttpRequest();
+			ajax.upload.addEventListener("progress", progressHandler, false);
+			ajax.addEventListener("load", completeHandler, false);
+			ajax.addEventListener("error", errorHandler, false);
+			ajax.addEventListener("abort", abortHandler, false);
+			ajax.open("POST", "dashboard/upload_process.php");
+			ajax.send($("#form-insert-upload").serializefiles());
 		}
 
 		function formatSizeUnits(bytes){
@@ -141,9 +114,14 @@
 			}
 		}
 		
+		var upload_size_in_second = 0;
 		
-		function progressHandler(event){
+		function ChangeStats(){
 			
+		}
+	
+		function progressHandler(event){
+			upload_size_in_second = upload_size_in_second + event.loaded;
 			new_size_up_c = event.loaded;
 			full_size_up = event.total;
 			var speed_up = ((new_size_up_c - old_size_up_c)).toFixed(2);
@@ -168,7 +146,30 @@
 			old_size_up_c = event.loaded;
 			
 		}
-</script>
+		function completeHandler(event){
+			var res = event.target.responseText;
+			if(res == "move_uploaded_file") {
+				$("#status").html("การอัพโหลดไฟล์มีปัญหา");
+				$("#process-upload").css("width", "100%");
+				setstep(2);
+			} else if(res == "zip") {
+				$("#status").html("กรุณาอัพโหลดไฟล์ Zip");
+				$("#process-upload").css("width", "100%");
+				setstep(2);
+			} else if(res == "error_no_file_select") {
+				$("#status").html("กรุณาเลือกไฟล์ก่อน");
+				$("#process-upload").css("width", "100%");
+				setstep(2);
+			} else if(res == "success") {
+				setstep(4);
+			} else {
+				console.log(res);
+				setstep(1);
+			}
+		}
+		function errorHandler(event){$("#status").innerHTML = "อัพโหลดไม่สำเร็จ";}
+		function abortHandler(event){$("#status").innerHTML = "อัพโหลดผิดพลาด";}
+		</script>
 		<form id="form-insert-upload" name="form-insert-upload" method="post" enctype="multipart/form-data">
 			<div class="box">
 				<div class="box-header">
@@ -180,29 +181,10 @@
 				<div class="box-body table-responsive" id='box-step-1-2'>
 					<table class="table">
 						<tr>
-							<td width="20%" valign="middle"><label for="inputbox1">ชื่อของเวอร์ชั่น</label></td>
-							<td><input type="text" class="form-control" name="name" id="inputbox1" placeholder="ตัวอย่าง : 1.0.0.0"></td>
-						</tr>
-						<tr>
-							<td><label for="inputbox2">เวลาเปิดใช้งาน</label></td>
-							<td><div class="input-group">
-								<input type="text" id="inputbox2" class="form-control" name="date" value="<?php echo date('Y-m-d H:i:s');?>">
-								<div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
-							</div></td>
-						</tr>
-						<tr>
-							<td><label for="inputbox3">เวลาเปิดใช้งาน</label></td>
-							<td>
-								<select name="enabled" class="form-control" id="inputbox3">
-									<option value="true">ใช้งาน</option>
-									<option value="false">ไม่ใช้งาน</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
 							<td><label for="inputbox4">เลือกไฟล์</label></td>
 							<td>
-								<input type="file" name="upfile" class="" id="inputbox4" accept="application/x-zip-compressed">
+								<input type="file" name="upfile" class="" id="inputbox1" accept="application/x-zip-compressed">
+								<input type="hidden" name="id" class="" id="inputbox2" value="<?php echo $_GET['success'];?>">
 							</td>
 						</tr>
 						<tr>
