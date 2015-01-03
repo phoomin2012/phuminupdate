@@ -18,7 +18,7 @@ if(isset($_POST)){
 				echo "error_no_file_select";
 				exit();
 			}
-			if(move_uploaded_file($fileTmpLoc, "../fileupdate/".$id['name'].".zip")){
+			if(copy($fileTmpLoc, "../fileupdate/".$id['name'].".zip")){
 				echo "success";
 				exit();
 			} else {
