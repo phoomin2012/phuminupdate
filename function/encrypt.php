@@ -1,7 +1,7 @@
 <?php
 class encrypt {
   public $encryption_key = 'ais3v9fCqKEwWrWQDyyv'; // key เฉพาะ ใครเอาไปใช้จำเป็นต้องเปลี่ยน อนาคตอาจไม่ได้อยู่ตรงนี้
-  private $_hash_type = 'adler32'; // hash ที่เอาใว้เข้ารหัส ไม่จำเป็นต้องตั้งใหม่ แต่ท่าตั้งใหม่ก็ดี
+  private $_hash_type = 'adler32'; // hash ที่เอาใว้เข้ารหัส ไม่จำเป็นต้องตั้งใหม่ แต่ถ้าตั้งใหม่ก็ดี
   private $_mcrypt_exists = FALSE;
   private $_mcrypt_cipher;
   private $_mcrypt_mode;
